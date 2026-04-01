@@ -58,7 +58,41 @@ function renderQuiz(fb, root){
   root.appendChild(box);
   root.appendChild(list);
 }
+function renderTrueFalse(fb, root){
+  const box = document.createElement("div");
+  box.className = "text";
+  box.innerHTML = `<p><b>${fb.question}</b></p>`;
 
+  const list = document.createElement("div");
+  list.className = "grid";
+
+  const options = [
+    { label: "נכון", value: true },
+    { label: "לא נכון", value: false }
+  ];
+
+  options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "tile";
+    btn.type = "button";
+    btn.textContent = opt.label;
+
+    btn.onclick = () => {
+      const ok = opt.value === fb.correct;
+      showFeedback(
+        root,
+        ok,
+        fb.explainCorrect ?? "מעולה!",
+        "רמז: נסו לחשוב אם המשפט באמת נכון או לא נכון 😉"
+      );
+    };
+
+    list.appendChild(btn);
+  });
+
+  root.appendChild(box);
+  root.appendChild(list);
+}
 function renderOrder(fb, root){
   const p = document.createElement("p");
   p.className = "text";
