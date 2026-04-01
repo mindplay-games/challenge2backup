@@ -1,0 +1,525 @@
+:root{
+  /* ===== Base ===== */
+  --bg1:#070A1A;
+  --bg2:#0B1026;
+
+  --text:#EAF2FF;
+  --muted: rgba(234,242,255,0.74);
+
+  /* Glass surface */
+  --glassA: rgba(255,255,255,0.10);
+  --glassB: rgba(255,255,255,0.05);
+  --line:  rgba(255,255,255,0.12);
+
+  /* Depth */
+  --shadow: 0 24px 70px rgba(0,0,0,.45);
+  --shadowIn: inset 0 1px 0 rgba(255,255,255,.08);
+
+  --r-xl: 24px;
+  --r-lg: 18px;
+
+  /* Status */
+  --good:#22c55e;
+  --warn:#f59e0b;
+  --bad:#ef4444;
+
+  /* ===== Category colors (meaning) ===== */
+  --cat-basics:      #60a5fa;  /* blue */
+  --cat-projects-y1: #34d399;  /* green */
+  --cat-projects-y2: #a78bfa;  /* purple */
+  --cat-projects-y3: #06b6d4;  /* cyan */
+  --cat-mini:        #f59e0b;  /* gold */
+
+  /* Active group gradient (set by body[data-group]) */
+  --group1: var(--cat-basics);
+  --group2: #a78bfa;
+
+  /* ✅ NEW: tiles glow colors (by page group) */
+  --tileGlow1: rgba(96,165,250,.32);
+  --tileGlow2: rgba(167,139,250,.22);
+
+  /* ✅ NEW: category-title color (solid) */
+  --titleColor: #EAF2FF;
+
+  /* Section hints (optional, subtle) */
+  --c-explain:#60a5fa;
+  --c-task:#f59e0b;
+  --c-practice:#22c55e;
+  --c-code:#a78bfa;
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  font-family: system-ui, "Rubik", Arial;
+  color: var(--text);
+
+  background:
+    radial-gradient(900px 520px at 15% 10%, rgba(96,165,250,.20), transparent 60%),
+    radial-gradient(900px 520px at 85% 20%, rgba(167,139,250,.16), transparent 60%),
+    radial-gradient(900px 520px at 40% 105%, rgba(34,197,94,.12), transparent 60%),
+    linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg1) 100%);
+}
+
+/* ===== Theme by group (controls title color + tile glow) ===== */
+body[data-group="basics"]{
+  --group1: var(--cat-basics);
+  --group2: #a78bfa;
+
+  --titleColor: var(--cat-basics);
+  --tileGlow1: rgba(96,165,250,.40);
+  --tileGlow2: rgba(167,139,250,.26);
+}
+
+body[data-group="projects_y1"]{
+  --group1: var(--cat-projects-y1);
+  --group2: var(--cat-basics);
+
+  --titleColor: var(--cat-projects-y1);
+  --tileGlow1: rgba(52,211,153,.42);
+  --tileGlow2: rgba(96,165,250,.24);
+}
+
+body[data-group="projects_y2"]{
+  --group1: var(--cat-projects-y2);
+  --group2: var(--cat-basics);
+
+  --titleColor: var(--cat-projects-y2);
+  --tileGlow1: rgba(167,139,250,.42);
+  --tileGlow2: rgba(96,165,250,.22);
+}
+
+body[data-group="grade3"],
+body[data-group="projects_y3"]{
+  --group1: var(--cat-projects-y3);
+  --group2: var(--cat-projects-y1);
+
+  --titleColor: var(--cat-projects-y3);
+  --tileGlow1: rgba(6,182,212,.42);
+  --tileGlow2: rgba(52,211,153,.22);
+}
+
+body[data-group="mini_projects"]{
+  --group1: var(--cat-mini);
+  --group2: #ec4899;
+
+  --titleColor: var(--cat-mini);
+  --tileGlow1: rgba(245,158,11,.45);
+  --tileGlow2: rgba(236,72,153,.22);
+}
+
+/* ===== Top ===== */
+.top{
+  padding: 34px 16px 22px;
+  border-bottom: 1px solid var(--line);
+  text-align:center;
+  backdrop-filter: blur(12px);
+}
+
+h1,h2,h3{ margin:0 0 10px; }
+
+/* ✅ Home title should be WHITE (works even if no .home class) */
+body:not([data-group]) .top h1,
+body.home .top h1{
+  color:#fff;
+  background:none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+}
+
+/* Default h1 gradient for non-home pages (group pages / challenge pages) */
+h1{
+  font-size: clamp(28px, 4vw, 44px);
+  letter-spacing: .2px;
+  line-height:1.15;
+
+  background: linear-gradient(90deg, var(--group1), var(--group2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ✅ Category page title = solid color per category (not gradient) */
+body[data-group] #catTitle{
+  color: var(--titleColor);
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  text-shadow: 0 0 18px color-mix(in srgb, var(--titleColor) 40%, transparent);
+}
+
+/* (Optional) subtitle under title also slightly tinted */
+body[data-group] #catSub{
+  color: color-mix(in srgb, var(--titleColor) 55%, rgba(234,242,255,0.74));
+}
+
+.sub{
+  color: var(--muted);
+  margin: 0;
+  font-size: 16px;
+  line-height:1.6;
+}
+
+.container{
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 22px;
+  display: grid;
+  gap: 14px;
+}
+
+/* ===== One clean "glass card" pattern ===== */
+.card,
+.tile{
+  position: relative; /* ✅ needed for ::before/::after */
+  background: linear-gradient(180deg, var(--glassA), var(--glassB));
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: var(--shadow), var(--shadowIn);
+  backdrop-filter: blur(14px);
+  overflow:hidden;
+}
+
+/* Card */
+.card{
+  border-radius: var(--r-xl);
+  padding: 18px 18px 16px;
+}
+
+/* tiny inner highlight (single layer only) */
+.card::before,
+.tile::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border-radius: inherit;
+  background: radial-gradient(900px 260px at 30% 0%, rgba(255,255,255,0.10), transparent 60%);
+  opacity:.7;
+  z-index: 0;
+}
+
+.card > *{ position: relative; z-index: 1; }
+
+/* Optional section accents (very subtle, no big borders) */
+.card--explain{ box-shadow: var(--shadow), var(--shadowIn), 0 0 0 1px rgba(96,165,250,0.06); }
+.card--task{    box-shadow: var(--shadow), var(--shadowIn), 0 0 0 1px rgba(245,158,11,0.06); }
+.card--practice{box-shadow: var(--shadow), var(--shadowIn), 0 0 0 1px rgba(34,197,94,0.06); }
+.card--code{    box-shadow: var(--shadow), var(--shadowIn), 0 0 0 1px rgba(167,139,250,0.06); }
+
+/* ===== Text ===== */
+.text{ color: var(--muted); line-height:1.75; font-size:15px; }
+.mini{ color: var(--muted); font-size:13px; }
+
+.row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+/* ===== Badges ===== */
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(234,242,255,0.86);
+  font-weight: 700;
+  font-size: 12.5px;
+  box-shadow: var(--shadowIn);
+}
+
+/* ===== Buttons ===== */
+.btn{
+  border:none;
+  border-radius: 16px;
+  padding: 11px 16px;
+  font-weight: 800;
+  cursor:pointer;
+  color: white;
+  background: linear-gradient(135deg, var(--group1), var(--group2));
+  box-shadow: 0 18px 45px rgba(0,0,0,.35);
+  transition: transform .15s ease, filter .15s ease;
+}
+.btn:hover{ filter: brightness(1.06); transform: translateY(-2px); }
+.btn:active{ transform: translateY(0px) scale(.99); }
+
+.btnGhost{
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(234,242,255,0.95);
+  box-shadow: var(--shadowIn), 0 12px 28px rgba(0,0,0,.22);
+}
+
+.btnGreen{
+  background: linear-gradient(135deg, rgba(34,197,94,1), rgba(52,211,153,1));
+}
+
+/* ===== Link button ===== */
+.link{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(234,242,255,0.95);
+  text-decoration:none;
+  font-weight: 800;
+  box-shadow: var(--shadowIn), 0 14px 36px rgba(0,0,0,.26);
+  transition: transform .15s ease, filter .15s ease;
+}
+.link:hover{ transform: translateY(-2px); filter: brightness(1.06); }
+
+/* ===== Tiles grid ===== */
+.grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.tile{
+  border-radius: var(--r-xl);
+  padding: 16px 16px 15px;
+  cursor:pointer;
+  text-decoration:none;
+  color: inherit;
+  text-align: right;
+  transition: transform .22s ease, filter .22s ease, box-shadow .22s ease;
+}
+
+/* ✅ NEW: Glow background for ALL tiles on category pages (not only catTile) */
+body[data-group] .tile::after{
+  content:"";
+  position:absolute;
+  inset:-42px;
+  border-radius: inherit;
+  pointer-events:none;
+  filter: blur(48px);
+  opacity: .35;                 /* ✅ visible glow */
+  transition: opacity .25s ease, transform .25s ease;
+  background:
+    radial-gradient(circle at 30% 30%, var(--tileGlow1), transparent 65%),
+    radial-gradient(circle at 75% 55%, var(--tileGlow2), transparent 70%);
+  z-index: 0;
+}
+body[data-group] .tile:hover::after{
+  opacity: .65;
+  transform: scale(1.03);
+}
+
+/* ✅ Keep category glow too (index category tiles) */
+.catTile::after{
+  content:"";
+  position:absolute;
+  inset:-34px;
+  border-radius: inherit;
+  pointer-events:none;
+  filter: blur(42px);
+  opacity: .22;
+  transition: opacity .25s ease;
+  z-index: 0;
+}
+
+/* Per-category glow color (index tiles) */
+.catTile[data-variant="basics"]::after{        background: radial-gradient(circle, rgba(96,165,250,.40), transparent 70%); }
+.catTile[data-variant="projects_y1"]::after{   background: radial-gradient(circle, rgba(52,211,153,.38), transparent 70%); }
+.catTile[data-variant="projects_y2"]::after{   background: radial-gradient(circle, rgba(167,139,250,.40), transparent 70%); }
+.catTile[data-variant="projects_y3"]::after{   background: radial-gradient(circle, rgba(6,182,212,.40), transparent 70%); }
+.catTile[data-variant="mini_projects"]::after{ background: radial-gradient(circle, rgba(245,158,11,.40), transparent 70%); }
+
+.tile:hover{
+  transform: translateY(-6px) scale(1.02);
+  filter: brightness(1.03);
+  box-shadow: 0 32px 85px rgba(0,0,0,.52), var(--shadowIn);
+}
+
+.catTile:hover::after{ opacity: .65; }
+
+/* Ensure content is above glows */
+.tile > *{ position: relative; z-index: 1; }
+
+.tile .tag{
+  color: rgba(234,242,255,0.78);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+.tile .name{
+  font-weight: 650;
+  font-size: 18px;
+  margin-top: 6px;
+  letter-spacing: .15px;
+}
+.tile .desc{
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
+/* Category header inside tile */
+.catTop{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-bottom: 10px;
+}
+
+.catIcon{
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display:grid;
+  place-items:center;
+  font-size: 28px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: var(--shadowIn), 0 18px 40px rgba(0,0,0,.28);
+}
+
+/* ===== Code area ===== */
+.editor{
+  width:100%;
+  min-height: 190px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+  color: var(--text);
+  padding: 12px;
+  box-shadow: var(--shadowIn), 0 18px 45px rgba(0,0,0,.25);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 14px;
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: plaintext;
+}
+
+.output{
+  background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  padding: 12px;
+  min-height: 70px;
+  overflow:auto;
+  box-shadow: var(--shadowIn), 0 18px 45px rgba(0,0,0,.22);
+  color: var(--text);
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: plaintext;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+
+pre, code{
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: plaintext;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+
+code{
+  background: rgba(255,255,255,0.10);
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+.hint, .solution{
+  margin-top: 10px;
+  border-radius: 16px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.03));
+  box-shadow: var(--shadowIn), 0 20px 55px rgba(0,0,0,.28);
+  color: rgba(234,242,255,0.95);
+}
+
+.hidden{ display:none; }
+
+/* ===== Status ===== */
+.status{ font-weight:900; min-height:22px; }
+.status.good{
+  color: var(--good);
+  text-shadow: 0 0 16px rgba(34,197,94,.38);
+}
+.status.bad{
+  color: var(--bad);
+  text-shadow: 0 0 14px rgba(239,68,68,.34);
+}
+
+/* ===== Run bar ===== */
+.runBar{
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.runButtonsRow{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+.runLeft, .runRight{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ===== Drag & Drop ===== */
+.orderWrap{ display:grid; gap:10px; margin-top:10px; }
+
+.orderItem{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.03));
+  box-shadow: var(--shadowIn), 0 18px 45px rgba(0,0,0,.24);
+  cursor: grab;
+  user-select:none;
+}
+.orderItem:active{ cursor: grabbing; }
+
+.orderGrip{
+  width:34px;
+  height:34px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(96,165,250,0.14);
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  box-shadow: var(--shadowIn), 0 12px 28px rgba(0,0,0,.22);
+}
+
+.orderCode{
+  flex:1;
+  font-size: 14px;
+  color: var(--text);
+  direction:ltr;
+  text-align:left;
+  unicode-bidi: plaintext;
+}
+
+.orderItem.dragOver{
+  outline:2px dashed rgba(96,165,250,.40);
+  outline-offset:2px;
+  background: rgba(96,165,250,.06);
+}
+
+.orderActions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:12px;
+  gap:10px;
+}
