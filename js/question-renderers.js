@@ -289,6 +289,7 @@ function renderQuestionByType(fb, root){
   }
 
   if (fb.type === "quiz") return renderQuiz(fb, root);
+  if (fb.type === "trueFalse") return renderTrueFalse(fb, root);
   if (fb.type === "order") return renderOrder(fb, root);
   if (fb.type === "fill") return renderFill(fb, root);
 
