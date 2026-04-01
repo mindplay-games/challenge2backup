@@ -1209,7 +1209,26 @@ else:
       bank: ["CREATE TABLE", "books;", "INSERT INTO books", "VALUES (...);"],
       explainCorrect: "קודם CREATE TABLE ואז שם הטבלה."
     }
-  },
+  },{
+  id: "sql_truefalse_1",
+  group: "projects_y3",
+  topic: "SQL",
+  title: "שאלה 11: נכון או לא נכון",
+  subtitle: "SELECT",
+  explain: "נבדוק האם אנחנו מבינים מה עושה SELECT.",
+  task: "בחרו אם המשפט נכון או לא נכון.",
+  hint: "",
+  mode: "practiceOnly",
+  starter: "",
+  solution: "",
+  expectedOutput: null,
+  fallback: {
+    type: "trueFalse",
+    question: "SELECT משמש למחיקת מידע מטבלה",
+    correct: false,
+    explainCorrect: "נכון מאוד — SELECT לא מוחק מידע, אלא שולף מידע."
+  }
+},
 
   /* ======================
      MINI PROJECTS (חדש)
