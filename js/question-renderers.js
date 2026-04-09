@@ -213,6 +213,69 @@ function renderPredictOutput(fb, root){
   root.appendChild(list);
 }
 
+
+function normalizeCode(s){
+  return (s ?? "")
+    .trim()
+    .replace(/\r\n/g, "\n")
+    .replace(/[ \t]+$/gm, "");
+}
+
+function renderDebug(fb, root){
+
+  const box = document.createElement("div");
+  box.className = "text";
+
+  const prompt = document.createElement("p");
+  prompt.innerHTML = `<b>${fb.question ?? "תקנו את הקוד:"}</b>`;
+  box.appendChild(prompt);
+
+  const editor = document.createElement("textarea");
+  editor.className = "editor";
+  editor.spellcheck = false;
+  editor.value = fb.starterCode ?? "";
+
+  const actions = document.createElement("div");
+  actions.className = "row";
+  actions.style.justifyContent = "flex-end";
+
+  const checkBtn = document.createElement("button");
+  checkBtn.className = "btn";
+  checkBtn.textContent = "בדוק תיקון ✅";
+
+  const resetBtn = document.createElement("button");
+  resetBtn.className = "btn btnGhost";
+  resetBtn.textContent = "אפס";
+
+  checkBtn.onclick = () => {
+
+    const user = normalizeCode(editor.value);
+    const solution = normalizeCode(fb.solution ?? "");
+
+    const ok = user === solution;
+
+    showFeedback(
+      root,
+      ok,
+      fb.explainCorrect ?? "מעולה! תיקנת נכון את הקוד 🎯",
+      "בדקו שוב סוגריים, גרשיים, נקודתיים והזחה 😉"
+    );
+  };
+
+  resetBtn.onclick = () => {
+    editor.value = fb.starterCode ?? "";
+    clearFeedback(root);
+  };
+
+  actions.appendChild(checkBtn);
+  actions.appendChild(resetBtn);
+
+  root.appendChild(box);
+  root.appendChild(editor);
+  root.appendChild(actions);
+}
+
+
 function renderOrder(fb, root){
   const p = document.createElement("p");
   p.className = "text";
@@ -403,16 +466,24 @@ function renderFill(fb, root){
 }
 
 function renderQuestionByType(fb, root){
+
   if (!fb || !fb.type) {
     root.innerHTML = "<p class='mini'>סוג תרגול לא מוכר.</p>";
     return;
   }
 
   if (fb.type === "quiz") return renderQuiz(fb, root);
+
   if (fb.type === "trueFalse") return renderTrueFalse(fb, root);
+
   if (fb.type === "multiSelect") return renderMultiSelect(fb, root);
+
   if (fb.type === "predictOutput") return renderPredictOutput(fb, root);
+
+  if (fb.type === "debug") return renderDebug(fb, root);
+
   if (fb.type === "order") return renderOrder(fb, root);
+
   if (fb.type === "fill") return renderFill(fb, root);
 
   root.innerHTML = "<p class='mini'>סוג תרגול לא מוכר.</p>";
