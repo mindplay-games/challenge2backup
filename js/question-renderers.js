@@ -49,7 +49,12 @@ function renderQuiz(fb, root){
 
     btn.onclick = () => {
       const ok = idx === fb.correctIndex;
-      showFeedback(root, ok, fb.explainCorrect ?? "מעולה!", ok ? "" : "רמז: חזרו להסבר ונסו שוב 😉");
+      showFeedback(
+        root,
+        ok,
+        fb.explainCorrect ?? "מעולה!",
+        ok ? "" : "רמז: חזרו להסבר ונסו שוב 😉"
+      );
     };
 
     list.appendChild(btn);
@@ -58,6 +63,7 @@ function renderQuiz(fb, root){
   root.appendChild(box);
   root.appendChild(list);
 }
+
 function renderTrueFalse(fb, root){
   const box = document.createElement("div");
   box.className = "text";
@@ -93,6 +99,120 @@ function renderTrueFalse(fb, root){
   root.appendChild(box);
   root.appendChild(list);
 }
+
+function renderMultiSelect(fb, root){
+  const box = document.createElement("div");
+  box.className = "text";
+  box.innerHTML = `<p><b>${fb.question}</b></p>`;
+
+  const list = document.createElement("div");
+  list.className = "grid";
+
+  const selected = new Set();
+
+  fb.options.forEach((opt, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "tile";
+    btn.type = "button";
+    btn.textContent = opt;
+
+    btn.onclick = () => {
+      if (selected.has(idx)) {
+        selected.delete(idx);
+        btn.classList.remove("selected");
+      } else {
+        selected.add(idx);
+        btn.classList.add("selected");
+      }
+    };
+
+    list.appendChild(btn);
+  });
+
+  const actions = document.createElement("div");
+  actions.className = "row";
+  actions.style.justifyContent = "flex-end";
+
+  const checkBtn = document.createElement("button");
+  checkBtn.className = "btn";
+  checkBtn.textContent = "בדוק ✅";
+
+  const resetBtn = document.createElement("button");
+  resetBtn.className = "btn btnGhost";
+  resetBtn.textContent = "אפס";
+
+  checkBtn.onclick = () => {
+    const correct = [...(fb.correctIndexes ?? [])].sort((a, b) => a - b);
+    const current = [...selected].sort((a, b) => a - b);
+
+    const ok =
+      correct.length === current.length &&
+      correct.every((val, i) => val === current[i]);
+
+    showFeedback(
+      root,
+      ok,
+      fb.explainCorrect ?? "מעולה!",
+      "רמז: יכול להיות שיש יותר מתשובה אחת נכונה 😉"
+    );
+  };
+
+  resetBtn.onclick = () => {
+    selected.clear();
+    list.querySelectorAll(".tile").forEach(btn => btn.classList.remove("selected"));
+    clearFeedback(root);
+  };
+
+  actions.appendChild(checkBtn);
+  actions.appendChild(resetBtn);
+
+  root.appendChild(box);
+  root.appendChild(list);
+  root.appendChild(actions);
+}
+
+function renderPredictOutput(fb, root){
+  const box = document.createElement("div");
+  box.className = "text";
+
+  const prompt = document.createElement("p");
+  prompt.innerHTML = `<b>${fb.question ?? "מה יודפס?"}</b>`;
+  box.appendChild(prompt);
+
+  const code = document.createElement("pre");
+  code.className = "solution";
+  code.style.display = "block";
+  code.style.direction = "ltr";
+  code.style.textAlign = "left";
+  code.textContent = fb.code ?? "";
+  box.appendChild(code);
+
+  const list = document.createElement("div");
+  list.className = "grid";
+
+  fb.options.forEach((opt, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "tile";
+    btn.type = "button";
+    btn.textContent = opt;
+
+    btn.onclick = () => {
+      const ok = idx === fb.correctIndex;
+      showFeedback(
+        root,
+        ok,
+        fb.explainCorrect ?? "מעולה!",
+        "רמז: נסו לעבור שורה שורה ולחשוב מה יודפס בפועל 😉"
+      );
+    };
+
+    list.appendChild(btn);
+  });
+
+  root.appendChild(box);
+  root.appendChild(list);
+}
+
 function renderOrder(fb, root){
   const p = document.createElement("p");
   p.className = "text";
@@ -290,6 +410,8 @@ function renderQuestionByType(fb, root){
 
   if (fb.type === "quiz") return renderQuiz(fb, root);
   if (fb.type === "trueFalse") return renderTrueFalse(fb, root);
+  if (fb.type === "multiSelect") return renderMultiSelect(fb, root);
+  if (fb.type === "predictOutput") return renderPredictOutput(fb, root);
   if (fb.type === "order") return renderOrder(fb, root);
   if (fb.type === "fill") return renderFill(fb, root);
 
