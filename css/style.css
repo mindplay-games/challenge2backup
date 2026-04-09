@@ -523,3 +523,8 @@ code{
   margin-top:12px;
   gap:10px;
 }
+
+.tile.selected {
+  outline: 3px solid #6aa9ff;
+  transform: scale(0.98);
+}
