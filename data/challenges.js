@@ -793,6 +793,33 @@ print(student["age"])`,
     explainCorrect: "כדי לשנות ערך במילון ניגשים למפתח המתאים ומציבים לו ערך חדש."
   }
 },
+  {
+  id: "debug_print_1",
+  group: "basics",
+  topic: "debug",
+  title: "תקנו את הקוד",
+  subtitle: "print syntax",
+  explain: "בקוד יש שגיאה קטנה. תקנו אותה.",
+  task: "תקנו את הקוד כך שיעבוד.",
+  hint: "",
+  mode: "practiceOnly",
+  starter: "",
+  solution: "",
+  expectedOutput: null,
+
+  fallback: {
+
+    type: "debug",
+
+    question: "הקוד הבא אמור להדפיס שלום — תקנו אותו:",
+
+    starterCode: `print("שלום)`,
+
+    solution: `print("שלום")`,
+
+    explainCorrect: "מעולה! שכחנו גרשיים סוגרות."
+  }
+},
   /* ======================
      PROJECTS – YEAR 1
      (שנה א׳)
